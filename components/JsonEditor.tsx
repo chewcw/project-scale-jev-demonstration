@@ -3,6 +3,7 @@ import { EditorState } from "@codemirror/state";
 import { EditorView, keymap, lineNumbers, highlightActiveLine } from "@codemirror/view";
 import { json } from "@codemirror/lang-json";
 import { defaultHighlightStyle, syntaxHighlighting } from "@codemirror/language";
+import { defaultKeymap } from "@codemirror/commands";
 
 export default function JsonEditor({
   value,
@@ -15,6 +16,9 @@ export default function JsonEditor({
   const editorViewRef = useRef<EditorView | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const onChangeRef = useRef(onChange);
+  onChangeRef.current = onChange;
+
   const handleDocChange = useCallback(
     (update: any) => {
       if (update.docChanged) {
@@ -26,10 +30,10 @@ export default function JsonEditor({
         } catch (e: any) {
           setError(e.message || "Invalid JSON");
         }
-        onChange(text);
+        onChangeRef.current(text);
       }
     },
-    [onChange]
+    []
   );
 
   useEffect(() => {
@@ -42,19 +46,8 @@ export default function JsonEditor({
         highlightActiveLine(),
         json(),
         syntaxHighlighting(defaultHighlightStyle),
-        EditorView.updateListener.of((update) => {
-          if (update.docChanged || update.selectionSet) {
-            const doc = update.state.doc;
-            const text = doc.toString();
-            try {
-              JSON.parse(text);
-              setError(null);
-            } catch (e: any) {
-              setError(e.message || "Invalid JSON");
-            }
-            onChange(text);
-          }
-        }),
+        keymap.of(defaultKeymap),
+        EditorView.updateListener.of(handleDocChange),
         EditorView.theme({
           "&": { height: "320px", fontSize: "13px", fontFamily: "ui-monospace, SFMono-Regular, monospace" },
           ".cm-scroller": { overflow: "auto" },
@@ -73,7 +66,7 @@ export default function JsonEditor({
       view.destroy();
       editorViewRef.current = null;
     };
-  }, [onChange]);
+  }, []);
 
   // Keep editor doc in sync with external value prop (e.g. reset)
   useEffect(() => {
