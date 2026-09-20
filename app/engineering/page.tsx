@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ScenarioLayout from "@/components/scenario/ScenarioLayout";
 import DecisionModelEditor from "@/components/scenario/DecisionModelEditor";
 import DecisionResultViewer from "@/components/scenario/DecisionResultViewer";
+import InputDataEditor from "@/components/scenario/InputDataEditor";
 import { engineeringScenario } from "@/lib/scenarios/engineering";
 import { validateDecisionModel } from "@/lib/decision/validation";
 import { evaluateEngineeringRules, engineeringNextAction } from "@/lib/deterministic/engineering";
@@ -18,7 +19,10 @@ export default function EngineeringPage() {
   const [error, setError] = useState("");
   const [explanation, setExplanation] = useState("");
 
-  const record = engineeringScenario.records[selectedIndex];
+  const [record, setRecord] = useState<any>(engineeringScenario.records[selectedIndex]);
+  useEffect(() => {
+    setRecord(engineeringScenario.records[selectedIndex]);
+  }, [selectedIndex]);
 
   const handleRun = async () => {
     setLoading(true);
@@ -90,7 +94,7 @@ export default function EngineeringPage() {
               </button>
             ))}
           </div>
-          <pre className="bg-black/40 text-xs p-3 rounded border border-gray-700 overflow-auto text-gray-300">{JSON.stringify(record, null, 2)}</pre>
+          <InputDataEditor config={record} onChange={setRecord} />
         </div>
       }
       rightPanel={
