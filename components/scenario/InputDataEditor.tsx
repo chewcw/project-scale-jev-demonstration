@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import JsonEditor from "../JsonEditor";
 
 export default function InputDataEditor({
   config,
@@ -33,12 +34,7 @@ export default function InputDataEditor({
 
   return (
     <div className="space-y-3">
-      <textarea
-        className="w-full h-80 font-mono text-xs bg-black/40 text-green-300 border border-gray-700 rounded-lg p-3 resize-y focus:outline-none focus:ring-2 focus:ring-emerald-500/50 whitespace-pre-wrap break-words"
-        value={raw}
-        onChange={(e) => setRaw(e.target.value)}
-        spellCheck={false}
-      />
+      <JsonEditor value={raw} onChange={(val) => { setRaw(val); try { const parsed = JSON.parse(val); onChange(parsed); setErrors([]); } catch (e: any) { setErrors([e.message || "Invalid JSON"]); } }} />
       {errors.length > 0 && (
         <div className="text-red-400 text-xs">
           {errors.map((e, i) => (

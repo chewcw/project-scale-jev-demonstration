@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import JsonEditor from "../JsonEditor";
 
 export default function DecisionModelEditor({
   config,
@@ -23,22 +24,7 @@ export default function DecisionModelEditor({
 
   return (
     <div className="space-y-3">
-      <textarea
-        className="w-full h-80 font-mono text-xs bg-black/40 text-green-300 border border-gray-700 rounded-lg p-3 resize-y focus:outline-none focus:ring-2 focus:ring-emerald-500/50 whitespace-pre-wrap break-words"
-        value={raw}
-        onChange={(e) => {
-          const val = e.target.value;
-          setRaw(val);
-          try {
-            const parsed = JSON.parse(val);
-            onChange(parsed);
-            setErrors([]);
-          } catch (err: any) {
-            setErrors([err.message || "Invalid JSON"]);
-          }
-        }}
-        spellCheck={false}
-      />
+      <JsonEditor value={raw} onChange={(val) => { setRaw(val); try { const parsed = JSON.parse(val); onChange(parsed); setErrors([]); } catch (err: any) { setErrors([err.message || "Invalid JSON"]); } }} />
       {errors.length > 0 && (
         <div className="text-red-400 text-xs">
           {errors.map((e, i) => (
