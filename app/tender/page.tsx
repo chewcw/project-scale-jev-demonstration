@@ -77,13 +77,13 @@ export default function TenderPage() {
       description="Demonstrates structured tender data, Jev decision for risk/fit/recommendation, deterministic capability rules, and LLM proposal drafting."
       leftPanel={
         <div className="space-y-3 text-sm">
-          <h3 className="font-semibold text-white">Tender Input</h3>
+          <h3 className="font-semibold text-slate-900">Tender Input</h3>
           <InputDataEditor config={input} onChange={setInput} />
         </div>
       }
       rightPanel={
         <div className="space-y-3">
-          <h3 className="font-semibold text-white">Edit Decision Model (JSON)</h3>
+          <h3 className="font-semibold text-slate-900">Edit Decision Model (JSON)</h3>
           <DecisionModelEditor config={model} onChange={setModel} />
           {error && <div className="text-red-400 text-xs">{error}</div>}
         </div>
@@ -92,7 +92,7 @@ export default function TenderPage() {
         <button
           onClick={handleRun}
           disabled={loading}
-          className="w-full py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 rounded-xl font-bold text-white shadow-lg shadow-emerald-900/20 transition-all disabled:opacity-50"
+          className="w-full py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 rounded-xl font-bold text-white shadow-lg shadow-emerald-200/30 transition-all disabled:opacity-50"
         >
           {loading ? "Running..." : "Run Decision"}
         </button>
@@ -103,11 +103,11 @@ export default function TenderPage() {
           <button
             onClick={handleGenerate}
             disabled={loading || !result}
-            className="px-5 py-2 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 rounded-lg font-semibold text-white shadow-lg shadow-violet-900/20 transition-all disabled:opacity-50"
+            className="px-5 py-2 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 rounded-lg font-semibold text-white shadow-lg shadow-violet-200/30 transition-all disabled:opacity-50"
           >
             Generate AI Explanation
           </button>
-          {explanation && <div className="p-4 bg-black/20 rounded-lg border border-gray-700 text-sm text-gray-200 leading-relaxed whitespace-pre-wrap">{explanation}</div>}
+          {explanation && <div className="p-4 bg-slate-50 rounded-lg border border-gray-200 text-sm text-slate-800 leading-relaxed whitespace-pre-wrap">{explanation}</div>}
         </div>
       }
     />

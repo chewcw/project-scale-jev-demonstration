@@ -3,7 +3,6 @@ import { EditorState } from "@codemirror/state";
 import { EditorView, keymap, lineNumbers, highlightActiveLine } from "@codemirror/view";
 import { json } from "@codemirror/lang-json";
 import { defaultHighlightStyle, syntaxHighlighting } from "@codemirror/language";
-import { oneDark } from "@codemirror/theme-one-dark";
 
 export default function JsonEditor({
   value,
@@ -43,7 +42,6 @@ export default function JsonEditor({
         highlightActiveLine(),
         json(),
         syntaxHighlighting(defaultHighlightStyle),
-        oneDark,
         EditorView.updateListener.of((update) => {
           if (update.docChanged || update.selectionSet) {
             const doc = update.state.doc;
@@ -93,10 +91,10 @@ export default function JsonEditor({
     <div className="space-y-2">
       <div
         ref={containerRef}
-        className="w-full border border-gray-700 rounded-lg overflow-hidden bg-[#1a1a2e] shadow-inner"
+        className="w-full border border-gray-200 rounded-lg overflow-hidden bg-white shadow-inner"
       />
       {error && (
-        <div className="text-red-400 text-xs">• {error}</div>
+        <div className="text-red-500 text-xs">• {error}</div>
       )}
     </div>
   );

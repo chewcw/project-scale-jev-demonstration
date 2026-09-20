@@ -36,7 +36,7 @@ export default function InputDataEditor({
     <div className="space-y-3">
       <JsonEditor value={raw} onChange={(val) => { setRaw(val); try { const parsed = JSON.parse(val); onChange(parsed); setErrors([]); } catch (e: any) { setErrors([e.message || "Invalid JSON"]); } }} />
       {errors.length > 0 && (
-        <div className="text-red-400 text-xs">
+        <div className="text-red-500 text-xs">
           {errors.map((e, i) => (
             <div key={i}>• {e}</div>
           ))}
@@ -44,7 +44,7 @@ export default function InputDataEditor({
       )}
       <div className="flex gap-3">
         <button onClick={handleRun} className="px-4 py-2 text-sm font-semibold bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition-colors">Apply</button>
-        <button onClick={handleReset} className="px-4 py-2 text-sm font-semibold bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors">Reset</button>
+        <button onClick={handleReset} className="px-4 py-2 text-sm font-semibold bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors">Reset</button>
       </div>
     </div>
   );

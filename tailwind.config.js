@@ -6,8 +6,8 @@ export default {
     extend: {
       colors: {
         scale: {
-          dark: "#0a0e17",
-          panel: "#111827",
+          dark: "#f8fafc",
+          panel: "#ffffff",
           accent: "#10b981",
           warning: "#f59e0b",
           danger: "#ef4444",
