@@ -5,24 +5,52 @@ export function evaluateProcurementRules(
   vendorQuotes: Array<Record<string, unknown>>
 ): DeterministicCheck[] {
   const checks: DeterministicCheck[] = [];
+  const requirements = (input.requirements || []) as Array<Record<string, unknown>>;
+  const req = requirements[0] || {};
+  const budgetMin = Number(req.budget ? (req.budget as any).min || 0 : 0);
+  const budgetMax = Number(req.budget ? (req.budget as any).max || Infinity : Infinity);
+  const allowedProtocols = (req.protocol || []) as string[];
+  const requiredRedundancy = !!req.redundancy;
+  const requiredWarranty = Number(req.warrantyMonths || 0);
+  const requiredLeadTime = Number(req.leadTimeDays || 999);
+
   for (const quote of vendorQuotes) {
+    const vendor = String(quote.vendor || "Unknown");
     const price = Number(quote.price || 0);
     const lead = Number(quote.leadTimeDays || 999);
+    const protocol = String(quote.protocol || "");
+    const redundancy = !!quote.redundancy;
+    const warrantyMonths = Number(quote.warrantyMonths || 0);
+
     checks.push({
-      rule: `PRICE_${quote.vendor}`,
-      status: price > 0 ? "PASS" : "FAIL",
-      message: price > 0 ? `Price valid: ${price}` : `Price missing for ${quote.vendor}`,
+      rule: `PRICE_${vendor}`,
+      status: price >= budgetMin && price <= budgetMax ? "PASS" : "FAIL",
+      message: price >= budgetMin && price <= budgetMax ? `Price within budget: ${price}` : `Price out of budget range [${budgetMin}, ${budgetMax}]: ${price}`,
     });
+
     checks.push({
-      rule: `LEAD_TIME_${quote.vendor}`,
-      status: lead < 60 ? "PASS" : "WARNING",
-      message: lead < 60 ? `Lead time acceptable: ${lead}d` : `Lead time extended: ${lead}d`,
+      rule: `LEAD_TIME_${vendor}`,
+      status: lead <= requiredLeadTime ? "PASS" : "WARNING",
+      message: lead <= requiredLeadTime ? `Lead time within requirement: ${lead}d` : `Lead time exceeds requirement (${requiredLeadTime}d): ${lead}d`,
     });
-    const protocolMatch = quote.requiredProtocol === quote.offeredProtocol;
+
+    const protocolAllowed = allowedProtocols.length === 0 || allowedProtocols.includes(protocol);
     checks.push({
-      rule: `PROTOCOL_${quote.vendor}`,
-      status: protocolMatch ? "PASS" : "FAIL",
-      message: protocolMatch ? `Protocol matches (${quote.offeredProtocol})` : `Protocol mismatch: requires ${quote.requiredProtocol} got ${quote.offeredProtocol}`,
+      rule: `PROTOCOL_${vendor}`,
+      status: protocolAllowed ? "PASS" : "FAIL",
+      message: protocolAllowed ? `Protocol allowed: ${protocol}` : `Protocol not allowed (${allowedProtocols.join(", ")}): ${protocol}`,
+    });
+
+    checks.push({
+      rule: `REDUNDANCY_${vendor}`,
+      status: redundancy === requiredRedundancy ? "PASS" : "FAIL",
+      message: redundancy === requiredRedundancy ? `Redundancy matches requirement (${requiredRedundancy})` : `Redundancy mismatch: requires ${requiredRedundancy} got ${redundancy}`,
+    });
+
+    checks.push({
+      rule: `WARRANTY_${vendor}`,
+      status: warrantyMonths >= requiredWarranty ? "PASS" : "WARNING",
+      message: warrantyMonths >= requiredWarranty ? `Warranty meets requirement: ${warrantyMonths}m` : `Warranty below requirement (${requiredWarranty}m): ${warrantyMonths}m`,
     });
   }
   return checks;

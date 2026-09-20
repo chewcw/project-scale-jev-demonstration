@@ -11,6 +11,7 @@ import { evaluateProcurementRules, procurementNextAction } from "@/lib/determini
 
 export default function ProcurementPage() {
   const [vendorQuotes, setVendorQuotes] = useState<any>(procurementScenario.vendorQuotes);
+  const [requirements, setRequirements] = useState<any>(procurementScenario.requirements);
   const [model, setModel] = useState<any>(procurementScenario.defaultDecisionModel);
   const [result, setResult] = useState<any>(null);
   const [checks, setChecks] = useState<any[]>([]);
@@ -32,12 +33,12 @@ export default function ProcurementPage() {
       const res = await fetch("/api/decision", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ scenario: "procurement", state: { vendorQuotes }, decisionModel: model }),
+        body: JSON.stringify({ scenario: "procurement", state: { vendorQuotes, requirements }, decisionModel: model }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "API error");
       setResult(data.result);
-      const detChecks = evaluateProcurementRules({ vendorQuotes }, vendorQuotes);
+      const detChecks = evaluateProcurementRules({ vendorQuotes, requirements }, vendorQuotes);
       setChecks(detChecks);
       setAction(procurementNextAction(detChecks, data.result));
     } catch (e: any) {
@@ -55,7 +56,7 @@ export default function ProcurementPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           scenario: "procurement",
-          structuredData: { vendorQuotes },
+          structuredData: { vendorQuotes, requirements },
           decisionResult: result?.answers,
           deterministicChecks: checks,
           promptType: "summary",
@@ -77,8 +78,8 @@ export default function ProcurementPage() {
       description="Compare vendor quotes with deterministic calculations and Jev compliance/suitability decisions."
       leftPanel={
         <div className="space-y-3 text-sm">
-          <h3 className="font-semibold text-slate-900">Vendor Quotes (Editable)</h3>
-          <InputDataEditor config={{ vendorQuotes }} onChange={(cfg: any) => setVendorQuotes(cfg.vendorQuotes)} />
+          <h3 className="font-semibold text-slate-900">Vendor Quotes</h3>
+          <InputDataEditor config={{ vendorQuotes, requirements }} onChange={(cfg: any) => { setVendorQuotes(cfg.vendorQuotes); setRequirements(cfg.requirements); }} />
         </div>
       }
       rightPanel={
