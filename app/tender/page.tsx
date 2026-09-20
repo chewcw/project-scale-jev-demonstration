@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import ScenarioLayout from "@/components/scenario/ScenarioLayout";
 import DecisionModelEditor from "@/components/scenario/DecisionModelEditor";
 import DecisionResultViewer from "@/components/scenario/DecisionResultViewer";
+import InputDataEditor from "@/components/scenario/InputDataEditor";
 import { tenderScenario } from "@/lib/scenarios/tender";
 import { validateDecisionModel } from "@/lib/decision/validation";
 import { evaluateTenderRules, tenderNextAction } from "@/lib/deterministic/tender";
@@ -77,7 +78,7 @@ export default function TenderPage() {
       leftPanel={
         <div className="space-y-3 text-sm">
           <h3 className="font-semibold text-white">Tender Input</h3>
-          <pre className="bg-black/40 text-xs p-3 rounded border border-gray-700 overflow-auto text-gray-300">{JSON.stringify(input, null, 2)}</pre>
+          <InputDataEditor config={input} onChange={setInput} />
         </div>
       }
       rightPanel={
