@@ -10,16 +10,6 @@ export default function DecisionModelEditor({
   const [raw, setRaw] = useState(() => JSON.stringify(config, null, 2));
   const [errors, setErrors] = useState<string[]>([]);
 
-  const handleRun = () => {
-    try {
-      const parsed = JSON.parse(raw);
-      onChange(parsed);
-      setErrors([]);
-    } catch (e: any) {
-      setErrors([e.message || "Invalid JSON"]);
-    }
-  };
-
   const handleReset = () => {
     const defaultCfg = {
       questions: {
@@ -36,7 +26,17 @@ export default function DecisionModelEditor({
       <textarea
         className="w-full h-80 font-mono text-xs bg-black/40 text-green-300 border border-gray-700 rounded-lg p-3 resize-y focus:outline-none focus:ring-2 focus:ring-emerald-500/50 whitespace-pre-wrap break-words"
         value={raw}
-        onChange={(e) => setRaw(e.target.value)}
+        onChange={(e) => {
+          const val = e.target.value;
+          setRaw(val);
+          try {
+            const parsed = JSON.parse(val);
+            onChange(parsed);
+            setErrors([]);
+          } catch (err: any) {
+            setErrors([err.message || "Invalid JSON"]);
+          }
+        }}
         spellCheck={false}
       />
       {errors.length > 0 && (

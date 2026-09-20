@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 export default function ScenarioLayout({
   title,
@@ -17,6 +17,9 @@ export default function ScenarioLayout({
   resultPanel?: React.ReactNode;
   llmPanel?: React.ReactNode;
 }) {
+  const [inputOpen, setInputOpen] = useState(true);
+  const [modelOpen, setModelOpen] = useState(true);
+
   return (
     <div className="space-y-6">
       <div>
@@ -24,16 +27,36 @@ export default function ScenarioLayout({
         {description && <p className="mt-2 text-gray-400 max-w-2xl">{description}</p>}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <section className="lg:col-span-1 bg-scale-panel border border-gray-800 rounded-2xl p-5 shadow-xl">
-          <h2 className="text-sm font-semibold uppercase tracking-wider text-gray-400 mb-4">Input Data</h2>
-          {leftPanel}
+      <div className="grid grid-cols-1 gap-6">
+        <section className="bg-scale-panel border border-gray-800 rounded-2xl shadow-xl overflow-hidden">
+          <button
+            onClick={() => setInputOpen(!inputOpen)}
+            className="w-full text-left px-5 py-4 flex items-center justify-between hover:bg-gray-800/40 transition-colors"
+            aria-expanded={inputOpen}
+          >
+            <h2 className="text-sm font-semibold uppercase tracking-wider text-gray-400">Input Data</h2>
+            <span className="text-gray-500 text-xs select-none">{inputOpen ? "−" : "+"}</span>
+          </button>
+          {inputOpen && (
+            <div className="px-5 pb-5">{leftPanel}</div>
+          )}
         </section>
 
-        <section className="lg:col-span-2 bg-scale-panel border border-gray-800 rounded-2xl p-5 shadow-xl space-y-4">
-          <h2 className="text-sm font-semibold uppercase tracking-wider text-gray-400">Decision Model</h2>
-          {rightPanel}
-          {actionBar && <div className="pt-4 border-t border-gray-700/50">{actionBar}</div>}
+        <section className="bg-scale-panel border border-gray-800 rounded-2xl shadow-xl overflow-hidden">
+          <button
+            onClick={() => setModelOpen(!modelOpen)}
+            className="w-full text-left px-5 py-4 flex items-center justify-between hover:bg-gray-800/40 transition-colors"
+            aria-expanded={modelOpen}
+          >
+            <h2 className="text-sm font-semibold uppercase tracking-wider text-gray-400">Decision Model</h2>
+            <span className="text-gray-500 text-xs select-none">{modelOpen ? "−" : "+"}</span>
+          </button>
+          {modelOpen && (
+            <div className="px-5 pb-5 space-y-4">
+              {rightPanel}
+              {actionBar && <div className="pt-4 border-t border-gray-700/50">{actionBar}</div>}
+            </div>
+          )}
         </section>
       </div>
 

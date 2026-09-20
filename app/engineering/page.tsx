@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import ScenarioLayout from "@/components/scenario/ScenarioLayout";
 import DecisionModelEditor from "@/components/scenario/DecisionModelEditor";
 import DecisionResultViewer from "@/components/scenario/DecisionResultViewer";
@@ -10,7 +10,6 @@ import { validateDecisionModel } from "@/lib/decision/validation";
 import { evaluateEngineeringRules, engineeringNextAction } from "@/lib/deterministic/engineering";
 
 export default function EngineeringPage() {
-  const [selectedIndex, setSelectedIndex] = useState(0);
   const [model, setModel] = useState<any>(engineeringScenario.defaultDecisionModel);
   const [result, setResult] = useState<any>(null);
   const [checks, setChecks] = useState<any[]>([]);
@@ -19,10 +18,7 @@ export default function EngineeringPage() {
   const [error, setError] = useState("");
   const [explanation, setExplanation] = useState("");
 
-  const [record, setRecord] = useState<any>(engineeringScenario.records[selectedIndex]);
-  useEffect(() => {
-    setRecord(engineeringScenario.records[selectedIndex]);
-  }, [selectedIndex]);
+  const [record, setRecord] = useState<any>(engineeringScenario.records);
 
   const handleRun = async () => {
     setLoading(true);
@@ -83,17 +79,6 @@ export default function EngineeringPage() {
       leftPanel={
         <div className="space-y-3 text-sm">
           <h3 className="font-semibold text-white">Sample Records</h3>
-          <div className="flex gap-2 mb-3">
-            {engineeringScenario.records.map((r, i) => (
-              <button
-                key={r.tag}
-                onClick={() => setSelectedIndex(i)}
-                className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors ${i === selectedIndex ? "bg-blue-600 border-blue-500 text-white" : "bg-gray-800 border-gray-700 text-gray-300 hover:text-white"}`}
-              >
-                {r.tag}
-              </button>
-            ))}
-          </div>
           <InputDataEditor config={record} onChange={setRecord} />
         </div>
       }
