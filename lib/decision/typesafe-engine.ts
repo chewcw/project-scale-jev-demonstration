@@ -1,4 +1,4 @@
-import { choice, TypeSafeClient } from "@typesafe-ai/sdk";
+import { choice, noul, score, TypeSafeClient } from "@typesafe-ai/sdk";
 import type { DecisionQuestionConfig, DecisionResult } from "./types.js";
 
 export interface DecisionEngine {
@@ -29,8 +29,16 @@ export class TypeSafeDecisionEngine implements DecisionEngine {
           criteria[opt] = null;
         }
         sdkQuestions[key] = choice(config.question, criteria);
+      } else if (config.type === "noul") {
+        const criteria: { true?: null; false?: null } = {};
+        for (const opt of config.options) {
+          if (opt === "true" || opt === "YES") criteria.true = null;
+          else if (opt === "false" || opt === "NO") criteria.false = null;
+        }
+        sdkQuestions[key] = noul(config.question, criteria);
+      } else if (config.type === "score") {
+        sdkQuestions[key] = score(config.question, config.options as [string, ...string[]]);
       } else {
-        // For simplicity in demo, treat non-choice as choice with a single option
         const criteria: Record<string, null> = {};
         for (const opt of config.options || ["YES", "NO"]) {
           criteria[opt] = null;
@@ -41,7 +49,7 @@ export class TypeSafeDecisionEngine implements DecisionEngine {
 
     const response = await this.client.systemOne({
       state: state as import("@typesafe-ai/sdk").EntryType,
-      questions: sdkQuestions as Record<string, import("@typesafe-ai/sdk").ChoiceQuestion>,
+      questions: sdkQuestions as Record<string, import("@typesafe-ai/sdk").Question>,
     });
 
     return {

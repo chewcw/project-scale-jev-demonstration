@@ -47,7 +47,7 @@ export const procurementScenario = {
       compliance: { id: "compliance", type: "choice" as const, question: "Which vendor quote comply with requirements?", options: ["Vendor A", "Vendor B", "Vendor C", "None"] },
       anyCompliance: { id: "anyCompliance", type: "noul" as const, question: "Is there at least one vendor comply with requirements completely?", options: ["true", "false"] },
       technicalSuitability: { id: "technicalSuitability", type: "choice" as const, question: "Is the technical solution suitable?", options: ["SUITABLE", "PARTIAL", "UNSUITABLE", "UNCLEAR"] },
-      procurementRisk: { id: "procurementRisk", type: "choice" as const, question: "What is the procurement risk?", options: ["LOW", "MEDIUM", "HIGH"] },
+      procurementRisk: { id: "procurementRisk", type: "score" as const, question: "What is the procurement risk level?", options: ["Very Low Risk", "Low Risk", "Medium Risk", "High Risk", "Very High Risk"] },
     },
   } as const,
 };
