@@ -4,11 +4,13 @@ import React, { useState } from "react";
 import ScenarioLayout from "@/components/scenario/ScenarioLayout";
 import DecisionModelEditor from "@/components/scenario/DecisionModelEditor";
 import DecisionResultViewer from "@/components/scenario/DecisionResultViewer";
+import InputDataEditor from "@/components/scenario/InputDataEditor";
 import { procurementScenario } from "@/lib/scenarios/procurement";
 import { validateDecisionModel } from "@/lib/decision/validation";
 import { evaluateProcurementRules, procurementNextAction } from "@/lib/deterministic/procurement";
 
 export default function ProcurementPage() {
+  const [vendorQuotes, setVendorQuotes] = useState<any>(procurementScenario.vendorQuotes);
   const [model, setModel] = useState<any>(procurementScenario.defaultDecisionModel);
   const [result, setResult] = useState<any>(null);
   const [checks, setChecks] = useState<any[]>([]);
@@ -30,12 +32,12 @@ export default function ProcurementPage() {
       const res = await fetch("/api/decision", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ scenario: "procurement", state: { vendorQuotes: procurementScenario.vendorQuotes }, decisionModel: model }),
+        body: JSON.stringify({ scenario: "procurement", state: { vendorQuotes }, decisionModel: model }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "API error");
       setResult(data.result);
-      const detChecks = evaluateProcurementRules({ vendorQuotes: procurementScenario.vendorQuotes }, procurementScenario.vendorQuotes);
+      const detChecks = evaluateProcurementRules({ vendorQuotes }, vendorQuotes);
       setChecks(detChecks);
       setAction(procurementNextAction(detChecks, data.result));
     } catch (e: any) {
@@ -53,7 +55,7 @@ export default function ProcurementPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           scenario: "procurement",
-          structuredData: { vendorQuotes: procurementScenario.vendorQuotes },
+          structuredData: { vendorQuotes },
           decisionResult: result?.answers,
           deterministicChecks: checks,
           promptType: "summary",
@@ -75,15 +77,8 @@ export default function ProcurementPage() {
       description="Compare vendor quotes with deterministic calculations and Jev compliance/suitability decisions."
       leftPanel={
         <div className="space-y-3 text-sm">
-          <h3 className="font-semibold text-white">Vendor Quotes</h3>
-          <div className="space-y-3">
-            {procurementScenario.vendorQuotes.map((v: any) => (
-              <div key={v.vendor} className="bg-black/30 p-3 rounded-lg border border-gray-700/40">
-                <div className="font-bold text-white text-xs">{v.vendor} — {v.model}</div>
-                <div className="text-xs text-gray-300 mt-1">Price: ${v.price} | Lead: {v.leadTimeDays}d | Protocol: {v.offeredProtocol} | Redundancy: {v.redundancy ? "Yes" : "No"}</div>
-              </div>
-            ))}
-          </div>
+          <h3 className="font-semibold text-white">Vendor Quotes (Editable)</h3>
+          <InputDataEditor config={{ vendorQuotes }} onChange={(cfg: any) => setVendorQuotes(cfg.vendorQuotes)} />
         </div>
       }
       rightPanel={
